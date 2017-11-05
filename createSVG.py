@@ -8,13 +8,13 @@ from pprint import pprint
 from svg import SVG, Polygon, Text
 
 # Border and Spacing configuration
-border = 0 # Border to the edge in mm
-spacing = 5 # Space between parts in mm
+border = 10 # Border to the edge in mm
+spacing = 1 # Space between parts in mm
 
 # Hexagon dimenstions
-sideLength = 50 # Length of a side of the hexagon in mm
-height = 50 # Height of the lamp in mm
-materialThickness = 2 # Thickness of the material in mm
+sideLength = 50.0 # Length of a side of the hexagon in mm
+height = 50.0 # Height of the lamp in mm
+materialThickness = 3 # Thickness of the material in mm
 
 # Groove dimenstions
 grooveWidth = materialThickness * 2 # Width of the groove
@@ -27,21 +27,25 @@ indentationOffset = 5 # How fare should the slante groove be slanted
 indentationWidth = (sideLength - 2 * indentationOffset)
 
 # Interlocking groove configuration
-numberOfGrooves = 10 # must be devisiable by two
-interlockGrooveDepth = 2
+numberOfGrooves = 6 # must be devisiable by two
+interlockGrooveDepth = 4 # TODO: calculate best value
+
+showText = True
 
 def drawEndInterlock(line):
 	for groove in range(numberOfGrooves / 2):
-		line.drawToRelative( (0, (height / numberOfGrooves)) )
-		line.drawToRelative( (interlockGrooveDepth, 0) )
-		line.drawToRelative( (0, (height / numberOfGrooves)) )
+		line.drawToRelative( (0, (height / numberOfGrooves) - 0.0125) )
+		line.drawToRelative( (interlockGrooveDepth, 0) ) # raus
+		line.drawToRelative( (0, (height / numberOfGrooves) + 0.0125) )
 		line.drawToRelative( (-interlockGrooveDepth, 0) )
 
 def drawStartInterlock(line):
+	line.drawToRelative((-interlockGrooveDepth,0))
 	for groove in range(numberOfGrooves / 2):
-		line.drawToRelative( (0, -(height / numberOfGrooves)) )
+		line.drawToRelative( (0, -(height / numberOfGrooves) - 0.0125) )
+		print (height / numberOfGrooves)
 		line.drawToRelative( (interlockGrooveDepth, 0) )
-		line.drawToRelative( (0, -(height / numberOfGrooves)) )
+		line.drawToRelative( (0, -(height / numberOfGrooves) + 0.0125) )
 		if groove != (numberOfGrooves / 2) - 1:
 			line.drawToRelative( (-interlockGrooveDepth, 0) )
 
@@ -50,51 +54,87 @@ def drawGroovePattern(line, count, interlocked = False, double = False):
 		depth = doubleGroove
 	else:
 		depth = grooveDepth
+	oldDepth = depth
+	
 	for i in range(count):
+		if (i == 0 or i == count - 1) and interlocked:
+			oldDepth = depth
+			depth = height / 2
+		else:
+			depth = oldDepth
+			
 		line.drawToRelative( (0, -depth) ) #doubleGroove
 		line.drawToRelative( (-grooveWidth, 0) )
 		line.drawToRelative( (0, depth) ) #doubleGroove
-		if i != count and interlocked:
-			line.drawToRelative( (-sideLength, 0) )
-		else:
-			line.drawToRelative( (-sideLength - interlockGrooveDepth, 0) )
+		line.drawToRelative( (-sideLength, 0) )
+	
+			
+def drawEndPiece(endPiece):
+	endPiece.drawToRelative((sideLength+2*interlockGrooveDepth + 2*materialThickness, 0))
+		
+	for groove in range(numberOfGrooves / 2):
+		endPiece.drawToRelative((0, (height / numberOfGrooves) - 0.0125))
+		endPiece.drawToRelative((-interlockGrooveDepth, 0))
+		endPiece.drawToRelative((0, (height / numberOfGrooves) + 0.0125))
+		if groove != (numberOfGrooves / 2) - 1:
+			endPiece.drawToRelative((interlockGrooveDepth, 0))
+		
+	endPiece.drawToRelative((-sideLength - 2*materialThickness, 0))
+	
+	for groove in range(numberOfGrooves / 2):
+		endPiece.drawToRelative((0, -(height / numberOfGrooves) - 0.0125))
+		endPiece.drawToRelative((-interlockGrooveDepth, 0))
+		endPiece.drawToRelative((0, -(height / numberOfGrooves) + 0.0125))
+		if groove != (numberOfGrooves / 2) - 1:
+			endPiece.drawToRelative((interlockGrooveDepth, 0))
+
 
 def test():	
-	part = SVG('test', 10000, 10000)
+	part = SVG('test', "1220mm", "610mm")
 	
 	partNo = 0
 	start = (border, border)
 	###################################################################################
 	# Part 1
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 + height*partNo ) ), "Part: %i" % (partNo + 1), 20)
-	line = Polygon(part, (start[0] + interlockGrooveDepth, start[1]) )
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 + height*partNo ) ), "Part: %i" % (partNo + 1), 20)
+	line = Polygon(part, (start[0]+ interlockGrooveDepth, start[1]) )
 	
 	# Top
-	line.drawToRelative( ( ((sideLength + grooveWidth) * 2) - interlockGrooveDepth, 0 ) )
+	line.drawToRelative( ( ((sideLength + grooveWidth) * 2), 0 ) )
 	
 	#Indentation
 	line.drawToRelative( (indentationOffset, indentationDepth) )
 	line.drawToRelative( (indentationWidth, 0) )
 	line.drawToRelative( (indentationOffset, -indentationDepth) )
 	
-	line.drawToRelative( ((sideLength + grooveWidth) - interlockGrooveDepth, 0) )
+	line.drawToRelative( ((sideLength + grooveWidth), 0) )
+	
+	endPiece = Polygon(part, (line.end[0] + spacing, line.end[1]))
 	
 	# end
 	drawEndInterlock(line)
 	
-	line.drawToRelative( (-sideLength + interlockGrooveDepth, 0) )
+	line.drawToRelative( (-sideLength, 0) )
 	
 	# bottom
 	drawGroovePattern(line, 3, True)
+	#line.drawToRelative((-interlockGrooveDepth,0))
 	
 	# start
 	drawStartInterlock(line)
 	
 	partNo += 1
-	start = (line.end[0] - interlockGrooveDepth, line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
+	
+	###################################################################################
+	# Endpiece
+	drawEndPiece(endPiece)
+	
 	###################################################################################
 	# Part 2
-	text = Text(part, ((start[0] + 13), (start[1] + (height / 2) ) ), "Part: %s" % str(partNo + 1), 20)
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + (height / 2) ) ), "Part: %s" % str(partNo + 1), 20)
 	line = Polygon(part, start)
 	
 	line.drawToRelative( ((sideLength + grooveWidth) , 0 ) )
@@ -114,16 +154,17 @@ def test():
 	
 	line.drawToRelative( (-sideLength, 0) )
 	
-	drawGroovePattern(line, 4, True)
+	drawGroovePattern(line, 4, False)
 
 	line.drawTo(start)
 	
-	start = (line.end[0], line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 	
 	###################################################################################
 	# Part 3
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 1), 20)
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 1), 20)
 	line = Polygon(part, start)
 	
 	# Top
@@ -136,21 +177,29 @@ def test():
 	
 	line.drawToRelative( ((sideLength + grooveWidth), 0) )
 	
+	endPiece = Polygon(part, (line.end[0] + spacing, line.end[1]))
+	
 	line.drawToRelative( (0, height) )
 	line.drawToRelative( (-sideLength, 0) )
 	
 	# bottom
-	drawGroovePattern(line, 3, True)
+	drawGroovePattern(line, 3, False)
 	
 	# start
 	line.drawTo(start)
 	
-	start = (line.end[0], line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 	
 	###################################################################################
+	# Endpiece
+	drawEndPiece(endPiece)
+	
+	
+	###################################################################################
 	# Part 4
-	text = Text(part, ((start[0] + 13), (start[1] + (height / 2) ) ), "Part: %s" % str(partNo + 1), 20)
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + (height / 2) ) ), "Part: %s" % str(partNo + 1), 20)
 	line = Polygon(part, start)
 	
 	line.drawToRelative( ((sideLength + grooveWidth) , 0 ) )
@@ -170,31 +219,34 @@ def test():
 	
 	line.drawToRelative( (-sideLength, 0) )
 	
-	drawGroovePattern(line, 4, True)
+	drawGroovePattern(line, 4, False)
 	
 	line.drawTo(start)
 	
-	start = (line.end[0], line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 	
 	###################################################################################
 	# Part 5 # interlocking
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 1), 20)
-	line = Polygon(part, (start[0] + interlockGrooveDepth,start[1]))
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 1), 20)
+	line = Polygon(part, (start[0],start[1]))
 	
 	# Top
-	line.drawToRelative( ( ((sideLength + grooveWidth) * 2) - interlockGrooveDepth, 0 ) )
+	line.drawToRelative( ( ((sideLength + grooveWidth) * 2), 0 ) )
 	
 	#Indentation
 	line.drawToRelative( (indentationOffset, indentationDepth) )
 	line.drawToRelative( (indentationWidth, 0) )
 	line.drawToRelative( (indentationOffset, -indentationDepth) )
 	
-	line.drawToRelative( ((sideLength + grooveWidth) - interlockGrooveDepth, 0) )
+	line.drawToRelative( ((sideLength + grooveWidth), 0) )
+	
+	endPiece = Polygon(part, (line.end[0] + spacing, line.end[1]))
 	
 	# end
 	drawEndInterlock(line)
-	line.drawToRelative( (-sideLength + interlockGrooveDepth, 0) )
+	line.drawToRelative( (-sideLength, 0) )
 	
 	# bottom
 	drawGroovePattern(line, 3, True)
@@ -202,42 +254,44 @@ def test():
 	# start
 	drawStartInterlock(line)
 	
-	start = (line.end[0] - interlockGrooveDepth, line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 	
 	###################################################################################
-	# Part 6 # Endpiece
-	###################################################################################
-	# Part 7 # Endpiece
+	# Endpiece
+	drawEndPiece(endPiece)
 	
 	###################################################################################
 	# Part 8 # interlocking
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 3), 20)
-	line = Polygon(part, (start[0] + interlockGrooveDepth, start[1]))
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 3), 20)
+	line = Polygon(part, (start[0], start[1]))
 	
-	line.drawToRelative( (sideLength - interlockGrooveDepth, 0) )
-	line.drawToRelative( (0, doubleGroove) )
-	line.drawToRelative( (grooveWidth, 0) )
+	line.drawToRelative( (sideLength+grooveWidth, 0) )
+	#line.drawToRelative( (0, doubleGroove) )
+	#line.drawToRelative( (grooveWidth, 0) )
 	
 	# Intendtation
-	line.drawToRelative( (0, (indentationDepth - doubleGroove) ) )
-	line.drawToRelative( (sideLength, 0) )
+	line.drawToRelative( (indentationOffset, (indentationDepth) ) )
+	line.drawToRelative( (sideLength - indentationOffset, 0) )
 	line.drawToRelative( (0, -(indentationDepth - doubleGroove) ) )
 	
 	line.drawToRelative( (grooveWidth, 0) )
 	line.drawToRelative( (0, -doubleGroove) )
 			
-	line.drawToRelative( (sideLength, 0) )
-	line.drawToRelative( (0, doubleGroove) )
-	line.drawToRelative( (grooveWidth, 0) )
-	line.drawToRelative( (0, -doubleGroove) )
+	line.drawToRelative( (sideLength + grooveWidth, 0) )
+	##line.drawToRelative( (0, doubleGroove) )
+	#line.drawToRelative( (grooveWidth, 0) )
+	#line.drawToRelative( (0, -doubleGroove) )
 		
-	line.drawToRelative( (sideLength - interlockGrooveDepth, 0 ) )
+	line.drawToRelative( (sideLength, 0 ) )
+	
+	endPiece = Polygon(part, (line.end[0] + spacing, line.end[1]))
 	
 	# end
 	drawEndInterlock(line)
 
-	line.drawToRelative( (-sideLength + interlockGrooveDepth, 0) )
+	line.drawToRelative( (-sideLength, 0) )
 	
 	drawGroovePattern(line, 3, True, True)
 	
@@ -246,12 +300,17 @@ def test():
 	
 	#line.drawTo(start)
 	
-	start = (line.end[0] - interlockGrooveDepth, line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 	
 	###################################################################################
+	# Endpiece
+	drawEndPiece(endPiece)
+	
+	###################################################################################
 	# Part 9
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 3), 20)
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 3), 20)
 	line = Polygon(part, start)
 	
 	line.drawToRelative( (sideLength, 0) )
@@ -284,12 +343,13 @@ def test():
 	line.drawToRelative( (-sideLength, 0 ) )
 	line.drawTo(start)
 	
-	start = (line.end[0], line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 	
 	###################################################################################
 	# Part 10
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 3), 20)
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 3), 20)
 	line = Polygon(part, start)
 	
 	line.drawToRelative( (sideLength, 0) )
@@ -310,6 +370,9 @@ def test():
 	line.drawToRelative( (0, -doubleGroove) )
 		
 	line.drawToRelative( (sideLength, 0 ) )
+	
+	endPiece = Polygon(part, (line.end[0] + spacing, line.end[1]))
+	
 	line.drawToRelative( (0, height) )
 	
 	for i in range(3):
@@ -321,12 +384,18 @@ def test():
 	line.drawToRelative( (-sideLength, 0 ) )
 	line.drawTo(start)
 	
-	start = (line.end[0], line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
+	
+	
+	###################################################################################
+	# Endpiece
+	drawEndPiece(endPiece)
 	
 	###################################################################################
 	# Part 11
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 3), 20)
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 3), 20)
 	line = Polygon(part, start)
 	
 	line.drawToRelative( (sideLength, 0) )
@@ -359,60 +428,62 @@ def test():
 	line.drawToRelative( (-sideLength, 0 ) )
 	line.drawTo(start)
 	
-	start = (line.end[0], line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 	
 	
 	###################################################################################
 	# Part 12
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 3), 20)
-	line = Polygon(part, (start[0] + interlockGrooveDepth,start[1]))
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 3), 20)
+	line = Polygon(part, (start[0],start[1]))
 	
-	line.drawToRelative( (sideLength - interlockGrooveDepth, 0) )
-	line.drawToRelative( (0, doubleGroove) )
-	line.drawToRelative( (grooveWidth, 0) )
+	line.drawToRelative( (sideLength + grooveWidth, 0) )
+	#line.drawToRelative( (0, doubleGroove) )
+	#line.drawToRelative( (grooveWidth, 0) )
 	
 	# Intendtation
-	line.drawToRelative( (0, (indentationDepth - doubleGroove) ) )
-	line.drawToRelative( (sideLength, 0) )
+	line.drawToRelative( (indentationOffset, (indentationDepth) ) )
+	line.drawToRelative( (sideLength - indentationOffset, 0) )
 	line.drawToRelative( (0, -(indentationDepth - doubleGroove) ) )
 	
 	line.drawToRelative( (grooveWidth, 0) )
 	line.drawToRelative( (0, -doubleGroove) )
 			
-	line.drawToRelative( (sideLength, 0) )
-	line.drawToRelative( (0, doubleGroove) )
-	line.drawToRelative( (grooveWidth, 0) )
-	line.drawToRelative( (0, -doubleGroove) )
+	line.drawToRelative( (sideLength + grooveWidth, 0) )
+	#line.drawToRelative( (0, doubleGroove) )
+	#line.drawToRelative( (grooveWidth, 0) )
+	#line.drawToRelative( (0, -doubleGroove) )
 		
-	line.drawToRelative( (sideLength - interlockGrooveDepth, 0 ) )
+	line.drawToRelative( (sideLength, 0 ) )
+	
+	endPiece = Polygon(part, (line.end[0] + spacing, line.end[1]))
 	
 	drawEndInterlock(line)
 	
-	line.drawToRelative( (-sideLength + interlockGrooveDepth, 0) )
+	line.drawToRelative( (-sideLength, 0) )
 	drawGroovePattern(line, 3, True, True)
 	
 	#line.drawToRelative( (-sideLength + interlockGrooveDepth, 0 ) )
 	drawStartInterlock(line)
 	
-	start = (line.end[0] - interlockGrooveDepth, line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 	
 	###################################################################################
-	# Part 13 # Endpiece
-	
-	###################################################################################
-	# Part 14 # Endpiece
+	# Endpiece
+	drawEndPiece(endPiece)
 	
 	###################################################################################
 	# Part 15
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 5), 20)
-	line = Polygon(part, (start[0] + interlockGrooveDepth, start[1]))
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 5), 20)
+	line = Polygon(part, (start[0], start[1]))
 	
-	line.drawToRelative( (sideLength - interlockGrooveDepth, 0) )
-	line.drawToRelative( (0, grooveDepth) )
+	line.drawToRelative( (sideLength, 0) )
+	line.drawToRelative( (0, height / 2) )
 	line.drawToRelative( (grooveWidth, 0) )
-	line.drawToRelative( (0, -grooveDepth) )
+	line.drawToRelative( (0, -height / 2) )
 	
 	line.drawToRelative( (sideLength, 0) )
 	line.drawToRelative( (0, grooveDepth) )
@@ -420,25 +491,27 @@ def test():
 	line.drawToRelative( (0, -grooveDepth+indentationDepth) )
 
 	#Indentation
-	line.drawToRelative( (sideLength, 0) )
-	line.drawToRelative( (0, grooveDepth-indentationDepth) )
-	line.drawToRelative( (grooveWidth, 0) )
-	line.drawToRelative( (0, -grooveDepth) )
+	line.drawToRelative( (sideLength + grooveWidth, 0) )
+	#line.drawToRelative( (0, grooveDepth-indentationDepth) )
+	#line.drawToRelative( (grooveWidth, 0) )
+	line.drawToRelative( (0, -height / 2) )
 	
-	line.drawToRelative( ((sideLength - interlockGrooveDepth), 0) )
+	line.drawToRelative( ((sideLength), 0) )
 	
 	drawEndInterlock(line)
 	
-	line.drawToRelative( (-(sideLength*4 + grooveWidth*3 - interlockGrooveDepth), 0) )
+	line.drawToRelative( (-(sideLength*4 + grooveWidth*3), 0) )
 	
 	drawStartInterlock(line)
 	
-	start = (line.end[0] - interlockGrooveDepth, line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 	
+	start = (border + 5 * sideLength + 5 * grooveWidth + 3*interlockGrooveDepth + 2*materialThickness, border)
 	###################################################################################
 	# Part 16
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 5), 20)
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 5), 20)
 	line = Polygon(part, start)
 	
 	line.drawToRelative( (sideLength, 0) )
@@ -470,11 +543,13 @@ def test():
 	line.drawToRelative( (-(sideLength*5 + grooveWidth*4), 0) )
 	line.drawTo(start)
 	
-	start = (line.end[0], line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
-		###################################################################################
+
+	###################################################################################
 	# Part 17
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 5), 20)
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 5), 20)
 	line = Polygon(part, start)
 	
 	line.drawToRelative( (sideLength, 0) )
@@ -499,11 +574,12 @@ def test():
 	line.drawToRelative( (-(sideLength*4 + grooveWidth*3), 0) )
 	line.drawTo(start)
 	
-	start = (line.end[0], line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 	###################################################################################
 	# Part 18
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 5), 20)
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 5), 20)
 	line = Polygon(part, start)
 	
 	line.drawToRelative( (sideLength, 0) )
@@ -535,18 +611,19 @@ def test():
 	line.drawToRelative( (-(sideLength*5 + grooveWidth*4), 0) )
 	line.drawTo(start)
 	
-	start = (line.end[0], line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 	
 	###################################################################################
 	# Part 19
-	text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 5), 20)
-	line = Polygon(part, (start[0] + interlockGrooveDepth, start[1]))
+	if showText:
+		text = Text(part, ((start[0] + 13), (start[1] + height/2 ) ), "Part: %i" % (partNo + 5), 20)
+	line = Polygon(part, (start[0], start[1]))
 	
-	line.drawToRelative( (sideLength - interlockGrooveDepth, 0) )
-	line.drawToRelative( (0, grooveDepth) )
+	line.drawToRelative( (sideLength, 0) )
+	line.drawToRelative( (0, height / 2) )
 	line.drawToRelative( (grooveWidth, 0) )
-	line.drawToRelative( (0, -grooveDepth) )
+	line.drawToRelative( (0, -height / 2) )
 	
 	line.drawToRelative( (sideLength, 0) )
 	line.drawToRelative( (0, grooveDepth) )
@@ -554,18 +631,18 @@ def test():
 	line.drawToRelative( (0, -grooveDepth+indentationDepth) )
 
 	#Indentation
-	line.drawToRelative( (sideLength, 0) )
-	line.drawToRelative( (0, grooveDepth-indentationDepth) )
-	line.drawToRelative( (grooveWidth, 0) )
-	line.drawToRelative( (0, -grooveDepth) )
+	line.drawToRelative( (sideLength + grooveWidth, 0) )
+	#line.drawToRelative( (0, grooveDepth-indentationDepth) )
+	#line.drawToRelative( (grooveWidth, 0) )
+	line.drawToRelative( (0, -height / 2) )
 	
-	line.drawToRelative( ((sideLength - interlockGrooveDepth), 0) )
+	line.drawToRelative( ((sideLength), 0) )
 	drawEndInterlock(line)
 	
-	line.drawToRelative( (-(sideLength*4 + grooveWidth*3 - interlockGrooveDepth), 0) )
+	line.drawToRelative( (-(sideLength*4 + grooveWidth*3), 0) )
 	drawStartInterlock(line)
 	
-	start = (line.end[0], line.end[1] + spacing + border + height)
+	start = (line.end[0], line.end[1] + spacing + height)
 	partNo += 1
 		
 	###################################################################################

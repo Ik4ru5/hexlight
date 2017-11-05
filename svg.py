@@ -10,7 +10,7 @@ class SVG():
 		
 		
 	def strarray(self):
-		var = ['<meta http-equiv="refresh" content="2"><?xml version="1.0"?>\n',
+		var = ['<?xml version="1.0"?>\n',
 			   '<svg height="%s" width="%s" >\n' % (self.height,self.width),
 			   ' <g style="fill-opacity:1.0; stroke:black;\n',
 			   '  stroke-width:0.1mm;">\n']
@@ -44,12 +44,12 @@ class Polygon():
 		
 	def drawTo(self, end):
 		self.end = end
-		self.svg.add('\t<line x1="%dmm" y1="%dmm" x2="%dmm" y2="%dmm" transform="rotate(%s)" />\n' % (self.start[0], self.start[1], end[0], end[1], self.rotate))
+		self.svg.add('\t<line x1="%smm" y1="%smm" x2="%smm" y2="%smm" transform="rotate(%s)" />\n' % (self.start[0], self.start[1], end[0], end[1], self.rotate))
 		self.start = end
 		
 	def drawToRelative(self, offset):
 		self.end = ((self.start[0] + offset[0]), (self.start[1]+ offset[1]))
-		self.svg.add('\t<line x1="%dmm" y1="%dmm" x2="%dmm" y2="%dmm" transform="rotate(%s)" />\n' % (self.start[0], self.start[1], (self.start[0] + offset[0]), (self.start[1]+ offset[1]), self.rotate))
+		self.svg.add('\t<line x1="%smm" y1="%smm" x2="%smm" y2="%smm" transform="rotate(%s)" />\n' % (self.start[0], self.start[1], (self.start[0] + offset[0]), (self.start[1]+ offset[1]), self.rotate))
 		newStart = ((self.start[0] + offset[0]), (self.start[1]+ offset[1]))
 		self.start = newStart
 			
