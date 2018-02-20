@@ -181,3 +181,7 @@ $RECYCLE.BIN/
 
 test.html
 test.svg
+.pioenvs
+.piolibdeps
+.clang_complete
+.gcc-flags.json
