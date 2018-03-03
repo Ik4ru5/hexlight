@@ -1,14 +1,16 @@
 #include "HexlightWifi.h"
 
-HexlightWifi::HexlightWifi() {
-	this->debug("HexlightWifi");
-	WiFi.mode(WIFI_AP_STA);
+HexlightWifi::HexlightWifi() : Debuggable() {
+	// WiFi.mode(WIFI_AP_STA);
 	// TODO: Read Hotspots from Array or something
-	wifiMulti.addAP("NA NA NA NA NA NA BATLAN!!", "niemandmussbullesein");
-	wifiMulti.addAP("Fuba", "moppelkotze");
-	wifiMulti.addAP("Fablab Karlsruhe", "foobar42");
 	
-	if(wifiMulti.run() == WL_CONNECTED) {
+	this->wifiMulti.addAP("WLAN-592980", "8081513424484664");
+	this->wifiMulti.addAP("NA NA NA NA NA NA BATLAN!!", "niemandmussbullesein");
+	this->wifiMulti.addAP("net6", "moppelkotze");
+	this->wifiMulti.addAP("Fuba", "moppelkotze");
+	this->wifiMulti.addAP("Fablab Karlsruhe", "foobar42");
+
+	if(this->wifiMulti.run() == WL_CONNECTED) {
 		Serial.println("WiFi connected");
 		Serial.println("IP address: ");
 		Serial.println(WiFi.localIP());
@@ -17,14 +19,13 @@ HexlightWifi::HexlightWifi() {
 	// TODO: Create backup Wifi station
 }
 
-uint8_t HexlightWifi::handle() {
-	uint8_t status = wifiMulti.run();
+void HexlightWifi::handleWifi() {
+	uint8_t status = this->wifiMulti.run();
 	if(status != WL_CONNECTED) {
 		Serial.println("WiFi not connected!");
 		delay(1000);
 	}
-	return status;
+	//else {
+	
+	//}
 }
-
-
-
