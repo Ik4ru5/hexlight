@@ -3,141 +3,31 @@
 Hexlight::Hexlight(uint8_t pin, uint8_t numLeds, char* OTApass) : HexlightWifi() {
 	this->initOTA(OTApass);
 	this->initStrip(pin, numLeds);
-	this->udp.begin(PORT);
+	this->Udp.begin(PORT);
+	this->debug("Hexlight - Setup");
 }
 
 void Hexlight::hexDelay(unsigned long ms) {
-	Serial.printf("hexDelay(%i)\n", ms);
 	for(int i = 0; i < ms; i++) {
 		Serial.printf("Delay Loop - %i\n", i);
 		delay(1);
-		this->debug("handle ...");
-		ms -= this->handle();
-		this->debug("done\n");
-		if(this->packetInQueue) {
-			return;
-		}
+		//ms -= this->handle();
 	}	
 }
 
-uint32_t Hexlight::handle() {
-	uint32_t start = millis();
+void Hexlight::handle() {
 	this->handleWifi();
 	ArduinoOTA.handle();
-	this->packetInQueue = this->checkNewPacket();
-	if(this->packetInQueue) {
-		this->debug("receivedPacket");
-		this->parsePacket();
-	}
-	//yield();
-	uint32_t stop = millis();
-	uint16_t time = stop - start;
-	return time;
+	this->hexParsePacket();
 }
 
-/**************
-**           **
-**  PATTERN  **
-**           **
-***************/
-
-void Hexlight::candle() {
-	this->debug("Candle");
-	uint8_t green; // brightness of the green 
-	uint8_t red;  // add a bit for red
-	for(uint8_t i=0; i<100; i++) {
-		green = 50 + random(155);
-		red = green + random(50);
-		this->strip.setPixelColor(random(strip.numPixels() - 1), red, green, 0);
-		this->strip.show();
-		this->hexDelay(5);
-		if(this->packetInQueue) {
-			return;
-		}
-	}
-}
-
-void Hexlight::flash(uint32_t c, uint8_t t, uint8_t wait) {
-	for(uint8_t i = 0; i < t; i++) {
-		for (uint8_t o = 0; o < this->strip.numPixels(); o++) {
-			this->strip.setPixelColor (o, c);
-		}
-		this->strip.show();
-		this->hexDelay(wait);
-		for (uint8_t o = 0; o < this->strip.numPixels(); o++) {
-			this->strip.setPixelColor(o, this->strip.Color(0, 0, 0, 0));
-		}
-		this->strip.show();
-		this->hexDelay(wait);
-		if(this->packetInQueue) {
-			return;
-		}
-	}
-}
-
-void Hexlight::colorSet(uint32_t c) {
-	for (uint16_t i = 0; i < this->strip.numPixels(); i++) {
-		this->strip.setPixelColor (i, c);
-	}
-	this->strip.show();
-}
-
-void Hexlight::rainbowCycle(uint8_t wait) {
-	//this->debug("RainbowCycle - Method");
-	uint16_t i, j;
-
-	for (j = 0; j < 256 * 5; j++) { // 5 cycles of all colors on wheel
-		//Serial.printf("RainbowCycle - Method var j=%u\n", j);
-		for (i = 0; i < this->strip.numPixels(); i++) {
-			//Serial.printf("RainbowCycle - Method var i=%u\n", i);
-			this->strip.setPixelColor(i, this->Wheel(((i * 256 / this->strip.numPixels()) + j) & 255));
-		}
-		this->strip.show();
-		this->hexDelay(wait);
-		if(this->packetInQueue) {
-			return;
-		}
-	}
-}
-
-uint32_t Hexlight::Wheel(byte WheelPos) {
-	WheelPos = 255 - WheelPos;
-	if (WheelPos < 85) {
-		return this->strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-	}
-	if (WheelPos < 170) {
-		WheelPos -= 85;
-		return this->strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-	}
-	WheelPos -= 170;
-	return this->strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-}
-
-void Hexlight::colorWipe(uint32_t c, uint8_t wait) {
-	for (uint16_t i = 0; i < this->strip.numPixels(); i++) {
-		this->strip.setPixelColor (i, c);
-		this->strip.show();
-		this->hexDelay(wait);
-		if(this->packetInQueue) {
-			return;
-		}
-	}
-}
-
-/**************
-**           **
-**  PARSING  **
-**           **
-***************/
-
-void Hexlight::handlePatterns() {
-	this->packetInQueue = false;
+void Hexlight::doStep() {
 	switch(this->pattern) {
 		case 1:
 			{
 				int a = 1;
 				while(incomingPacket[a] != 0) {
-					this->parseColor(this->incomingPacket, a);
+					this->parseColor(a);
 					a += 2;
 				}
 				this->colorWipe(this->strip.Color(this->red, this->green, this->blue, this->white), 50);
@@ -156,43 +46,50 @@ void Hexlight::handlePatterns() {
 	}
 }
 
-bool Hexlight::checkNewPacket() {
-	int packetSize = this->udp.parsePacket();
+void Hexlight::hexParsePacket() {
+	int packetSize = this->Udp.parsePacket();
 	
 	if (packetSize) {
-		Serial.printf("Received %d bytes from %s, port %d\n", packetSize, this->udp.remoteIP().toString().c_str(), this->udp.remotePort());
-		return true;
-	}
-}
-	
-void Hexlight::parsePacket() {
-	int len = this->udp.read(this->incomingPacket, 255);
-	if (len > 0) {
-		this->incomingPacket[len] = 0;
-	}
-	Serial.printf("UDP packet contents: %s\n", this->incomingPacket);
-	
-	if(this->incomingPacket[0] == '*') {
-		this->debug("Colorwipe");
-		this->pattern = 1;
-	}
-	else if(this->incomingPacket[0] == '#') {
-		this->debug("Setting single LED");
-		this->pattern = 2;
-	}
-	else if(this->incomingPacket[0] == 'p') {
-		if(this->incomingPacket[1] == 'r') {
-			this->debug("RainbowCycle - Parsing");
-			this->pattern = 3;
+		Serial.printf("Received %d bytes from %s, port %d\n", packetSize, this->Udp.remoteIP().toString().c_str(), this->Udp.remotePort());
+		int len = this->Udp.read(this->incomingPacket, 255);
+		if (len > 0) {
+			this->incomingPacket[len] = 0;
 		}
-		else if(this->incomingPacket[1] == 'c') {
-			this->debug("Candle");
-			this->pattern = 4;
+		Serial.printf("Udp packet contents: %s\n", this->incomingPacket);
+		
+		if(this->incomingPacket[0] == '*') {
+			this->debug("Colorwipe");
+			this->pattern = 1;
+		}
+		else if(this->incomingPacket[0] == '#') {
+			this->debug("Setting single LED");
+			this->pattern = 2;
+		}
+		else if(this->incomingPacket[0] == 'p') {
+			if(this->incomingPacket[1] == 'r') {
+				this->debug("RainbowCycle - Parsing");
+				this->pattern = 3;
+				this->resetPacket();
+				delay(2000);
+			}
+			else if(this->incomingPacket[1] == 'c') {
+				this->debug("Candle");
+				this->pattern = 4;
+			}
 		}
 	}
 }
 
-void Hexlight::parseColor(char* incomingPacket, int i) {
+void Hexlight::resetPacket() {
+	for(int i = 0; i < 255; i++) {
+		this->incomingPacket[i] = 0;
+	}
+	this->lastStep = 0;
+	this->step = 0;
+	this->debug("reset");
+}
+
+void Hexlight::parseColor(int i) {
 	switch(this->incomingPacket[i]) {
 		case 98: // b
 		case 66: // B
@@ -217,6 +114,88 @@ void Hexlight::parseColor(char* incomingPacket, int i) {
 			this->blue = 0;
 			this->white = 0;
 			break;
+	}
+}
+
+/**************
+**           **
+**  PATTERN  **
+**           **
+***************/
+
+void Hexlight::candle() {
+	this->debug("Candle");
+	uint8_t green; // brightness of the green 
+	uint8_t red;  // add a bit for red
+	for(uint8_t i=0; i<100; i++) {
+		green = 50 + random(155);
+		red = green + random(50);
+		this->strip.setPixelColor(random(strip.numPixels() - 1), red, green, 0);
+		this->strip.show();
+		this->hexDelay(5);
+		
+	}
+}
+
+void Hexlight::flash(uint32_t c, uint8_t t, uint8_t wait) {
+	for(uint8_t i = 0; i < t; i++) {
+		for (uint8_t o = 0; o < this->strip.numPixels(); o++) {
+			this->strip.setPixelColor (o, c);
+		}
+		this->strip.show();
+		this->hexDelay(wait);
+		for (uint8_t o = 0; o < this->strip.numPixels(); o++) {
+			this->strip.setPixelColor(o, this->strip.Color(0, 0, 0, 0));
+		}
+		this->strip.show();
+		this->hexDelay(wait);
+		
+	}
+}
+
+void Hexlight::colorSet(uint32_t c) {
+	for (uint16_t i = 0; i < this->strip.numPixels(); i++) {
+		this->strip.setPixelColor (i, c);
+	}
+	this->strip.show();
+}
+
+void Hexlight::rainbowCycle(uint8_t wait) {
+	uint16_t i, j;
+	unsigned long current = millis();
+	unsigned long currentWait = current - this->lastStep;
+	if(current - this->lastStep >= wait) {
+		Serial.printf("RainbowCycle - Wait was %i\n", currentWait);
+		for (i = 0; i < this->strip.numPixels(); i++) {
+			this->strip.setPixelColor(i, this->Wheel(((i * 256 / this->strip.numPixels()) + this->step) & 255));
+		}
+		this->strip.show();
+		
+		this->lastStep = millis();
+		this->step += 1;
+		Serial.printf("Current Step is %i\n", this->step);
+	}
+}
+
+uint32_t Hexlight::Wheel(byte WheelPos) {
+	WheelPos = 255 - WheelPos;
+	if (WheelPos < 85) {
+		return this->strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+	}
+	if (WheelPos < 170) {
+		WheelPos -= 85;
+		return this->strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+	}
+	WheelPos -= 170;
+	return this->strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+void Hexlight::colorWipe(uint32_t c, uint8_t wait) {
+	for (uint16_t i = 0; i < this->strip.numPixels(); i++) {
+		this->strip.setPixelColor (i, c);
+		this->strip.show();
+		this->hexDelay(wait);
+		
 	}
 }
 
