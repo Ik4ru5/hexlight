@@ -9,6 +9,7 @@ class HexlightWifi : public Debuggable {
 		HexlightWifi();
 		void handleWifi();
 		ESP8266WiFiMulti wifiMulti;
+		bool csp;
 	private:
 
 };

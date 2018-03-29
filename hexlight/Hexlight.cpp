@@ -1,5 +1,7 @@
 #include "Hexlight.h"
 
+Hexlight::Hexlight() {};
+
 Hexlight::Hexlight(uint8_t pin, uint8_t numLeds, char* OTApass) : HexlightWifi() {
 	this->initOTA(OTApass);
 	this->initStrip(pin, numLeds);
@@ -70,7 +72,6 @@ void Hexlight::hexParsePacket() {
 				this->debug("RainbowCycle - Parsing");
 				this->pattern = 3;
 				this->resetPacket();
-				delay(2000);
 			}
 			else if(this->incomingPacket[1] == 'c') {
 				this->debug("Candle");
@@ -228,7 +229,7 @@ void Hexlight::initStrip(uint8_t pin, uint8_t numLeds) {
 }
 
 void Hexlight::initOTA(char* OTApass) {
-	// OTA Port defaults to 8266
+	/*// OTA Port defaults to 8266
 	ArduinoOTA.setPort(8266);
 
 	// Hostname defaults to esp8266-[ChipID]
@@ -243,11 +244,11 @@ void Hexlight::initOTA(char* OTApass) {
 	this->initOnEnd();
 	this->initOnProgress();
 	
-	ArduinoOTA.begin();
+	ArduinoOTA.begin();*/
 }
 
 void Hexlight::initOnError() {
-	ArduinoOTA.onError([](ota_error_t error) {
+	/* ArduinoOTA.onError([](ota_error_t error) {
 		Serial.printf("[-] Error[%u]: ", error);
 		
 		// check error type
@@ -267,26 +268,26 @@ void Hexlight::initOnError() {
 			Serial.println("End Failed");
 		}
 		// TODO: flash(strip.Color(255, 0, 0, 0), 5, 150);
-	});
+	});*/
 }
 
 void Hexlight::initOnStart() {
-	ArduinoOTA.onStart([]() {
+	/*ArduinoOTA.onStart([]() {
 		Serial.println("[+] Starting OTA flashing");
 		// TODO: colorWipe(strip.Color(255, 0, 0, 0), 0);
-	});
+	});*/
 }
 
 void Hexlight::initOnEnd() {
-	ArduinoOTA.onEnd([]() {
+	/*ArduinoOTA.onEnd([]() {
 		Serial.println("[+] OTA has finished");
 		// TODO: flash(strip.Color(0, 255, 0, 0), 5, 150);
-	});
+	});*/
 }
 
 void Hexlight::initOnProgress() {
-	ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+	/*ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
 		Serial.printf("[*] Progress: %u%%\r\n", (progress / (total / 100)));
 		// TODO :colorSet(strip.Color(255 - ((progress / (total / 100)) * 2.55), 0 + ((progress / (total / 100)) * 2.55), 0, 0));
-	});
+	});*/
 }

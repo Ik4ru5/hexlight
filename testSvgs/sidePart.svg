@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<svg height="610mm" width="1220mm" >
+ <g style="fill-opacity:1.0; stroke:black;
+  stroke-width:0.1mm;">
+	<line x1="5.0mm" y1="5.0mm" x2="12.1428571429mm" y2="5.0mm" transform="rotate(0 0 0)" />
+	<line x1="12.1428571429mm" y1="5.0mm" x2="12.1428571429mm" y2="9.0mm" transform="rotate(0 0 0)" />
+	<line x1="12.1428571429mm" y1="9.0mm" x2="19.2857142857mm" y2="9.0mm" transform="rotate(0 0 0)" />
+	<line x1="19.2857142857mm" y1="9.0mm" x2="19.2857142857mm" y2="5.0mm" transform="rotate(0 0 0)" />
+	<line x1="19.2857142857mm" y1="5.0mm" x2="26.4285714286mm" y2="5.0mm" transform="rotate(0 0 0)" />
+	<line x1="26.4285714286mm" y1="5.0mm" x2="26.4285714286mm" y2="9.0mm" transform="rotate(0 0 0)" />
+	<line x1="26.4285714286mm" y1="9.0mm" x2="33.5714285714mm" y2="9.0mm" transform="rotate(0 0 0)" />
+	<line x1="33.5714285714mm" y1="9.0mm" x2="33.5714285714mm" y2="5.0mm" transform="rotate(0 0 0)" />
+	<line x1="33.5714285714mm" y1="5.0mm" x2="40.7142857143mm" y2="5.0mm" transform="rotate(0 0 0)" />
+	<line x1="40.7142857143mm" y1="5.0mm" x2="40.7142857143mm" y2="9.0mm" transform="rotate(0 0 0)" />
+	<line x1="40.7142857143mm" y1="9.0mm" x2="47.8571428571mm" y2="9.0mm" transform="rotate(0 0 0)" />
+	<line x1="47.8571428571mm" y1="9.0mm" x2="47.8571428571mm" y2="5.0mm" transform="rotate(0 0 0)" />
+	<line x1="47.8571428571mm" y1="5.0mm" x2="55.0mm" y2="5.0mm" transform="rotate(0 0 0)" />
+	<line x1="55.0mm" y1="5.0mm" x2="55.0mm" y2="13.0mm" transform="rotate(0 0 0)" />
+	<line x1="55.0mm" y1="13.0mm" x2="49.6666666667mm" y2="13.0mm" transform="rotate(0 0 0)" />
+	<line x1="49.6666666667mm" y1="13.0mm" x2="49.6666666667mm" y2="18.3333333333mm" transform="rotate(0 0 0)" />
+	<line x1="49.6666666667mm" y1="18.3333333333mm" x2="55.0mm" y2="18.3333333333mm" transform="rotate(0 0 0)" />
+	<line x1="55.0mm" y1="18.3333333333mm" x2="55.0mm" y2="23.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="55.0mm" y1="23.6666666667mm" x2="49.6666666667mm" y2="23.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="49.6666666667mm" y1="23.6666666667mm" x2="49.6666666667mm" y2="29.0mm" transform="rotate(0 0 0)" />
+	<line x1="49.6666666667mm" y1="29.0mm" x2="55.0mm" y2="29.0mm" transform="rotate(0 0 0)" />
+	<line x1="55.0mm" y1="29.0mm" x2="55.0mm" y2="34.3333333333mm" transform="rotate(0 0 0)" />
+	<line x1="55.0mm" y1="34.3333333333mm" x2="49.6666666667mm" y2="34.3333333333mm" transform="rotate(0 0 0)" />
+	<line x1="49.6666666667mm" y1="34.3333333333mm" x2="49.6666666667mm" y2="39.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="49.6666666667mm" y1="39.6666666667mm" x2="55.0mm" y2="39.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="55.0mm" y1="39.6666666667mm" x2="55.0mm" y2="47.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="55.0mm" y1="47.6666666667mm" x2="47.8571428571mm" y2="47.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="47.8571428571mm" y1="47.6666666667mm" x2="47.8571428571mm" y2="43.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="47.8571428571mm" y1="43.6666666667mm" x2="40.7142857143mm" y2="43.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="40.7142857143mm" y1="43.6666666667mm" x2="40.7142857143mm" y2="47.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="40.7142857143mm" y1="47.6666666667mm" x2="33.5714285714mm" y2="47.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="33.5714285714mm" y1="47.6666666667mm" x2="33.5714285714mm" y2="43.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="33.5714285714mm" y1="43.6666666667mm" x2="26.4285714286mm" y2="43.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="26.4285714286mm" y1="43.6666666667mm" x2="26.4285714286mm" y2="47.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="26.4285714286mm" y1="47.6666666667mm" x2="19.2857142857mm" y2="47.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="19.2857142857mm" y1="47.6666666667mm" x2="19.2857142857mm" y2="43.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="19.2857142857mm" y1="43.6666666667mm" x2="12.1428571429mm" y2="43.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="12.1428571429mm" y1="43.6666666667mm" x2="12.1428571429mm" y2="47.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="12.1428571429mm" y1="47.6666666667mm" x2="5.0mm" y2="47.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="5.0mm" y1="47.6666666667mm" x2="5.0mm" y2="39.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="5.0mm" y1="39.6666666667mm" x2="10.3333333333mm" y2="39.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="10.3333333333mm" y1="39.6666666667mm" x2="10.3333333333mm" y2="34.3333333333mm" transform="rotate(0 0 0)" />
+	<line x1="10.3333333333mm" y1="34.3333333333mm" x2="5.0mm" y2="34.3333333333mm" transform="rotate(0 0 0)" />
+	<line x1="5.0mm" y1="34.3333333333mm" x2="5.0mm" y2="29.0mm" transform="rotate(0 0 0)" />
+	<line x1="5.0mm" y1="29.0mm" x2="10.3333333333mm" y2="29.0mm" transform="rotate(0 0 0)" />
+	<line x1="10.3333333333mm" y1="29.0mm" x2="10.3333333333mm" y2="23.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="10.3333333333mm" y1="23.6666666667mm" x2="5.0mm" y2="23.6666666667mm" transform="rotate(0 0 0)" />
+	<line x1="5.0mm" y1="23.6666666667mm" x2="5.0mm" y2="18.3333333333mm" transform="rotate(0 0 0)" />
+	<line x1="5.0mm" y1="18.3333333333mm" x2="10.3333333333mm" y2="18.3333333333mm" transform="rotate(0 0 0)" />
+	<line x1="10.3333333333mm" y1="18.3333333333mm" x2="10.3333333333mm" y2="13.0mm" transform="rotate(0 0 0)" />
+	<line x1="10.3333333333mm" y1="13.0mm" x2="5.0mm" y2="13.0mm" transform="rotate(0 0 0)" />
+	<line x1="5.0mm" y1="13.0mm" x2="5.0mm" y2="5.0mm" transform="rotate(0 0 0)" />
+</g>
+</svg>

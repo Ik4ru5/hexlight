@@ -5,14 +5,14 @@
 
 #include "HexlightWifi.h"
 
-#define PORT 2323	
+#define PORT 2323
 
 #ifndef Hexlight_h
 #define Hexlight_h
 class Hexlight : public HexlightWifi {
 	public:
 		Adafruit_NeoPixel strip;
-		
+		Hexlight();
 		Hexlight(uint8_t pin, uint8_t numLeds, char* OTApass);
 		
 		void hexDelay(unsigned long ms);
