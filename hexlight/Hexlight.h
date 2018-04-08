@@ -1,25 +1,24 @@
 #include <Adafruit_NeoPixel.h>
 #include <ArduinoOTA.h>
-#include <ESP8266WiFi.h>
-#include <WiFiUdp.h>
 
 #include "HexlightWifi.h"
 
-#define PORT 2323
 
 #ifndef Hexlight_h
 #define Hexlight_h
 class Hexlight : public HexlightWifi {
 	public:
 		Adafruit_NeoPixel strip;
+		uint8_t pattern;
 		Hexlight();
 		Hexlight(uint8_t pin, uint8_t numLeds, char* OTApass);
+		~Hexlight();
 		
 		void hexDelay(unsigned long ms);
 		void handle();
 		void doStep();
 		
-		void parseColor(int i);
+
 		void hexParsePacket();
 		void resetPacket();
 		
@@ -32,10 +31,11 @@ class Hexlight : public HexlightWifi {
 		
 		//Color helper
 		uint32_t Wheel(byte WheelPos);
+		unsigned long lastStep;
+		uint32_t step;
 		
-		WiFiUDP Udp;
 		// TODO: Determin max size
-		char incomingPacket[255]; // propably too much
+		//char incomingPacket[255]; // propably too much
 		
 	private:
 		void initStrip(uint8_t pin, uint8_t numLeds);
@@ -47,9 +47,6 @@ class Hexlight : public HexlightWifi {
 		void initOnEnd();
 		void initOnProgress();
 		
-		unsigned long lastStep;
-		uint32_t step;
-		uint8_t pattern;
 		
 		uint8_t red = 0;
 		uint8_t green = 0;
