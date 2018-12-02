@@ -3,21 +3,29 @@
 #define PIN 0
 #define NUM_LEDS 18
 
-Hexlight hex = Hexlight(PIN, NUM_LEDS, "ota");
-bool output = true;
+Hexlight *hex;
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUM_LEDS, PIN, NEO_GRBW + NEO_KHZ800);
 
 void setup() {
 	Serial.begin(115200);
 	
-	delay(10);
-
+	strip.begin();
+	strip.show();
 	
-	Serial.printf("Size of hex: %i", sizeof(hex));
-	hex.debug("SETUP");
+	hex = new Hexlight(strip);
+	delay(10);
+	hex->colorSet(strip.Color(0, 0, 0, 255)); // init with white
 }
 
+/* ideas:
+bidirectional handshake to figure out which hexlight has rebootet
+	every X frames a heartbeat from the controller
+	every Y frames a heartbeat from the esp
+	heartbeat contains:
+		current step
+		...
+*/
+
 void loop() {
-	hex.handle();
-	hex.pattern = 3;
-	hex.doStep();
+	hex->handle();
 }

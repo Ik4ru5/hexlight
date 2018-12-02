@@ -3,39 +3,47 @@
 
 #include "HexlightWifi.h"
 
-
 #ifndef Hexlight_h
 #define Hexlight_h
 class Hexlight : public HexlightWifi {
 	public:
-		Adafruit_NeoPixel strip;
-		uint8_t pattern;
-		Hexlight();
-		Hexlight(uint8_t pin, uint8_t numLeds, char* OTApass);
+		Hexlight(Adafruit_NeoPixel& strip);
 		~Hexlight();
+		
+		bool delayHandle();
 		
 		void hexDelay(unsigned long ms);
 		void handle();
-		void doStep();
-		
-
-		void hexParsePacket();
-		void resetPacket();
+		void handlePatterns();
+		void readPacket();
+		void setPattern(uint8_t pattern);
+		void parseColor();
+		uint32_t parseTime(uint8_t pos);
 		
 		// Patterns
 		void candle();
-		void flash(uint32_t c, uint8_t t, uint8_t wait);
+		void demo();
+		void theaterChaseRainbow(uint8_t wait, uint8_t steps);
+		void theaterChase(uint32_t c, uint8_t wait);
+		void flash(uint32_t c, uint8_t wait);
 		void colorSet(uint32_t c);
 		void rainbowCycle(uint8_t wait);
+		void rainbow(uint8_t wait);
+		void singleLedRainbow(uint8_t wait);
 		void colorWipe(uint32_t c, uint8_t wait);
+		void handlePattern();
 		
-		//Color helper
-		uint32_t Wheel(byte WheelPos);
-		unsigned long lastStep;
-		uint32_t step;
+		uint32_t wheel(byte WheelPos);
 		
-		// TODO: Determin max size
-		//char incomingPacket[255]; // propably too much
+		Adafruit_NeoPixel strip;
+		int step = 0;
+		int demoStep = 0;
+		int8_t coulum = 0;
+		int8_t row = 0;
+		uint8_t pattern = 0;
+		uint32_t color = 0;
+		uint32_t time = 0;
+		uint8_t brightness = 0;
 		
 	private:
 		void initStrip(uint8_t pin, uint8_t numLeds);
@@ -46,11 +54,5 @@ class Hexlight : public HexlightWifi {
 		void initOnStart();
 		void initOnEnd();
 		void initOnProgress();
-		
-		
-		uint8_t red = 0;
-		uint8_t green = 0;
-		uint8_t blue = 0;
-		uint8_t white = 0;
 };
 #endif
