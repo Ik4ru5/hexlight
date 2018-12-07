@@ -5,16 +5,7 @@ HexlightWifi::HexlightWifi() : Debuggable() {
 	WiFi.mode(WIFI_STA);
 	// TODO: Read Hotspots from Array or something
 
-	//this->wifiMulti.addAP("WLAN-592980", "8081513424484664");
-	this->wifiMulti.addAP("NA NA NA NA NA NA BATLAN!!", "niemandmussbullesein");
-	this->wifiMulti.addAP("Foobar", "donotuse");
-	this->wifiMulti.addAP("net6", "moppelkotze");
-	this->wifiMulti.addAP("Fuba", "moppelkotze");
-	this->wifiMulti.addAP("Fablab Karlsruhe", "foobar42");
-	this->wifiMulti.addAP("darmstadt.ccc.de", "cleanupwhenyouleave");
-	//this->wifiMulti.addAP("psylight", "gibt'snicht!");
-	//this->wifiMulti.addAP("Nukleares Forschungsnetz", "bobderbaumeister");
-	//this->wifiMulti.addAP("darmstadt.freifunk.net", "");
+this->wifiMulti.addAP("example WiFi", "Example Password123");
 
 	if (this->wifiMulti.run() == WL_CONNECTED) {
 		Serial.println("WiFi connected");
